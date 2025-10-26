@@ -21,7 +21,6 @@ npm install
 
 # 3. Generate Prisma client and sync schema
 npx prisma generate
-npx prisma db push
 
 # 4. Start app
 npm run start
@@ -86,11 +85,15 @@ npm run start
 ### Test Cases
 
 - **Internal API Key**: Enter `my-super-secret-key-123` in "API Key" field
+  ![alt text](pictures/interal_key.png.png)
+
 - **Client API Key**: Enter `service-a-key-123` (or `service-a-key-456`, `service-a-key-789`) in "API Key" field
+  ![alt text](pictures/client-api-key.png)
 - **JWT Bearer**:
   1. Call POST `/auth/signup` first
   2. Copy `access_token` from response
   3. Enter in "Bearer Token" field
+     ![alt text](pictures/jwt.png)
 
 ### Test Film Endpoints
 
