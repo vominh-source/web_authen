@@ -93,7 +93,8 @@ npm run start
   1. Call POST `/auth/signup` first
   2. Copy `access_token` from response
   3. Enter in "Bearer Token" field
-     ![alt text](pictures/jwt.png)
+  
+  ![alt text](pictures/jwt.png)
 
 ### Test Film Endpoints
 
