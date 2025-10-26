@@ -1,98 +1,101 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# Authentication System Guide
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+## 🚀 How to run project
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+### Prerequisites
 
-## Description
+- Node.js (v18+)
+- Neon database (already setup)
+- Git
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
-
-## Project setup
+### Setup & Run
 
 ```bash
-$ npm install
+# 1. Clone and install dependencies
+git clone <repo-url>
+cd authen
+npm install
+
+# 2. Database is already available in .env
+# DATABASE_URL has been configured for Neon
+
+# 3. Generate Prisma client and sync schema
+npx prisma generate
+npx prisma db push
+
+# 4. Start app
+npm run start
+# App runs at: http://localhost:3000
+# Swagger UI: http://localhost:3000/api
 ```
 
-## Compile and run the project
+---
 
-```bash
-# development
-$ npm run start
+## 🔐 3 Types of Authentication
 
-# watch mode
-$ npm run start:dev
+### 1. **Internal Key Guard** - Internal client
 
-# production mode
-$ npm run start:prod
-```
+**Use case**: Only a few internal clients (under 10), need to identify these clients
 
-## Run tests
+**Implementation**: `ApiKeyGuard`
 
-```bash
-# unit tests
-$ npm run test
+- Key is stored in `.env` file: `INTERNAL_API_KEY=my-super-secret-key-123`
+- Direct comparison with config
+- No database lookup needed
 
-# e2e tests
-$ npm run test:e2e
+### 2. **Client API Key Guard** - Registered client
 
-# test coverage
-$ npm run test:cov
-```
+**Use case**: Many clients, can register to use service at any time
 
-## Deployment
+**Implementation**: `ClientApiKeyGuard`
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+- Key is stored in database (`Client` table)
+- Can enable/disable client (`isActive` field)
+- Scalable for many clients
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+### 3. **JWT Guard** - User authentication
 
-```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
-```
+**Use case**: Authentication for end users, session management
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+**Implementation**: `JwtGuard` + `JwtRefreshGuard`
 
-## Resources
+- Access token (15 minutes) + Refresh token (7 days)
+- User data in database
+- Secure session management
 
-Check out a few resources that may come in handy when working with NestJS:
+### 4. **Either Auth Guard** - Flexible (Combo)
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+**Use case**: Endpoint accepts any type of auth above
 
-## Support
+**Implementation**: `EitherAuthGuard`
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+- Try internal key → client key → JWT
+- If 1 of 3 is valid then allow
+- Attach `req.authType` and `req.user/req.client`
 
-## Stay in touch
+---
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+## 🧪 Test on Swagger UI
 
-## License
+### Setup
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+1. Open http://localhost:3000/api
+2. Click **Authorize** (top right)
+3. Enter auth for scheme you want to test:
+
+### Test Cases
+
+- **Internal API Key**: Enter `my-super-secret-key-123` in "API Key" field
+- **Client API Key**: Enter `service-a-key-123` (or `service-a-key-456`, `service-a-key-789`) in "API Key" field
+- **JWT Bearer**:
+  1. Call POST `/auth/signup` first
+  2. Copy `access_token` from response
+  3. Enter in "Bearer Token" field
+
+### Test Film Endpoints
+
+After authorize, try:
+
+- `GET /film` - Get list of films
+- `POST /film` - Create new film
+- `GET /film/{id}` - Get film by ID
