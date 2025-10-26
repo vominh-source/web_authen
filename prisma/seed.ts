@@ -1,37 +1,28 @@
 // prisma/seed.ts
 import { PrismaClient } from '@prisma/client';
-import { randomBytes, createHash } from 'crypto';
 
 const prisma = new PrismaClient();
 
-function hashKey(key: string) {
-  return createHash('sha256').update(key).digest('hex');
-}
-
 async function main() {
   const clients = [
-    { name: 'service-a' },
-    { name: 'service-b' },
-    { name: 'service-c' },
+    { name: 'service-a', key: 'service-a-key-123' },
+    { name: 'service-b', key: 'service-b-key-456' },
+    { name: 'service-c', key: 'service-c-key-789' },
   ];
 
   for (const c of clients) {
-    // generate plaintext key to give to client
-    const plain = randomBytes(24).toString('hex'); // you will output this
-    const keyHash = hashKey(plain);
-
-    // upsert so repeatable
+    // Store raw key directly (no hashing for easy testing)
     await prisma.client.upsert({
-      where: { apiKeyHash: keyHash },
+      where: { apiKey: c.key }, // using apiKey field now
       update: {},
       create: {
         name: c.name,
-        apiKeyHash: keyHash,
+        apiKey: c.key, // raw key stored here
         isActive: true,
       },
     });
 
-    console.log(`Client: ${c.name}, API_KEY (store this securely): ${plain}`);
+    console.log(`Client: ${c.name}, API_KEY: ${c.key}`);
   }
 }
 

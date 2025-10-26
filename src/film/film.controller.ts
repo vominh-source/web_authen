@@ -6,13 +6,15 @@ import { UpdateFilmDto } from './dto/update-film.dto';
 import { ApiKeyGuard } from 'src/auth/guards/api-key.guard';
 import { ClientApiKeyGuard } from 'src/auth/guards/api-key-advance.guard';
 import { JwtGuard } from 'src/auth/guards/jwt.guard';
+import { EitherAuthGuard } from 'src/auth/guards/either-auth.guard';
 @ApiTags('films')
-@ApiSecurity('api-key')
-@UseGuards(ClientApiKeyGuard)
-// @UseGuards(ApiKeyGuard)
 @ApiBearerAuth('bearer')
-
-@UseGuards(JwtGuard)
+@ApiSecurity('internal-api-key')
+@ApiSecurity('client-api-key')
+@UseGuards(EitherAuthGuard)
+// @UseGuards(ClientApiKeyGuard)
+// @UseGuards(JwtGuard)
+// @UseGuards(ApiKeyGuard)
 @Controller('film')
 export class FilmController {
   constructor(private readonly filmService: FilmService) {}

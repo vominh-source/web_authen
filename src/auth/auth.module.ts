@@ -5,10 +5,12 @@ import { JwtModule } from '@nestjs/jwt';
 import { JwtStrategy } from './strategy/jwt.strategy';
 import { JwtRefreshStrategy } from './strategy/jwt-refresh.strategy';
 import { PrismaService } from '../../prisma/prisma.service';
+import { EitherAuthGuard } from './guards/either-auth.guard';
 
 @Module({
   imports:[JwtModule.register({})],
   controllers: [AuthController],
-  providers: [AuthService, JwtStrategy, JwtRefreshStrategy, PrismaService],
+  providers: [AuthService, JwtStrategy, JwtRefreshStrategy, PrismaService, EitherAuthGuard],
+  exports: [EitherAuthGuard],
 })
 export class AuthModule {}

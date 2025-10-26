@@ -1,15 +1,15 @@
 import { CanActivate, ExecutionContext, Injectable, UnauthorizedException } from '@nestjs/common';
 import { PrismaService } from '../../../prisma/prisma.service';
-import { createHash } from 'crypto';
+// import { createHash } from 'crypto'; // removed - no hashing needed
 
 
 @Injectable()
 export class ClientApiKeyGuard implements CanActivate {
   constructor(private prisma: PrismaService) {}
 
-  private hashKey(key: string) {
-    return createHash('sha256').update(key).digest('hex');
-  }
+  // private hashKey(key: string) {
+  //   return createHash('sha256').update(key).digest('hex');
+  // }
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const req = context.switchToHttp().getRequest();
@@ -19,10 +19,9 @@ export class ClientApiKeyGuard implements CanActivate {
       throw new UnauthorizedException('Missing API key');
     }
 
-    const apiKeyHash = this.hashKey(apiKey);
-
+    // Compare raw key directly with DB (no hashing)
     const client = await this.prisma.client.findUnique({
-      where: { apiKeyHash },
+      where: { apiKey: apiKey }, // using apiKey field now
     });
     console.log('Client found:', client);
 

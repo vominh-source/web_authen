@@ -14,7 +14,11 @@ async function bootstrap() {
         in: 'header',
         description: 'Enter your API key',
       },
-      'api-key',
+      'internal-api-key',
+    )
+    .addApiKey(
+      { type: 'apiKey', name: 'x-api-key', in: 'header', description: 'Client API key (hashed in DB)' },
+      'client-api-key',
     )
     .addBearerAuth(
       {
