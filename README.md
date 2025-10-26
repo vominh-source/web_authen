@@ -85,7 +85,7 @@ npm run start
 ### Test Cases
 
 - **Internal API Key**: Enter `my-super-secret-key-123` in "API Key" field
-  ![alt text](pictures/interal_key.png.png)
+  ![alt text](pictures/interal_key.png)
 
 - **Client API Key**: Enter `service-a-key-123` (or `service-a-key-456`, `service-a-key-789`) in "API Key" field
   ![alt text](pictures/client-api-key.png)
